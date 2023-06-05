@@ -49,8 +49,20 @@ lcd_info current_lcd_info[] = {
 };
 
 #if !defined(USE_HWSPI_ONLY)
-// Constructor for software spi.
-// if modules is unreadable or you don't know the width and height of modules,you can use this constructor.
+/*!
+ * @brief Constructor for a software SPI which will instantiate a new object 
+ *   based on the model number.  The model number must be one of the values 
+ *   that is defined in the LCDWIKI_SPI.h file.
+ * 
+ * @param model The model number of the chipset that you are using
+ * @param cs The Arduino pin that will be attached to the chip select line on the TFT board
+ * @param cd The Arduino pin that will be attached to the command or data line on the TFT board
+ * @param miso The Arduino pin that will be attached to the MISO line on the TFT board
+ * @param mosi The Arduino pin that will be attached to the MOSI line on the TFT board
+ * @param reset The Arduino pin that will be attached to the reset line on the TFT board
+ * @param clk The Arduino pin that will be attached to the clock line on the TFT board
+ * @param led The Arduino pin that will be attached to the LED line on the TFT board
+ */
 LCDWIKI_SPI::LCDWIKI_SPI(uint16_t model,int8_t cs, int8_t cd, int8_t miso, int8_t mosi, int8_t reset, int8_t clk, int8_t led) {
 	_cs = cs;
 	_cd = cd;
@@ -130,9 +142,23 @@ LCDWIKI_SPI::LCDWIKI_SPI(uint16_t model,int8_t cs, int8_t cd, int8_t miso, int8_
 	setWriteDir();
 }
 
-// Constructor for software spi.
-// if modules is readable or you know the width and height of modules,you can use this constructor.
-LCDWIKI_SPI::LCDWIKI_SPI(int16_t wid,int16_t heg,int8_t cs, int8_t cd, int8_t miso, int8_t mosi, int8_t reset, int8_t clk, int8_t led) {
+
+/*!
+ * @brief Constructor for a software SPI which will instantiate a new object 
+ *   based on the width and height of the display.
+ * 
+ * @param wid The width of the display in pixels
+ * @param heg The height of the diplay in pixels
+ * 
+ * @param cs The Arduino pin that will be attached to the chip select line on the TFT board
+ * @param cd The Arduino pin that will be attached to the command or data line on the TFT board
+ * @param miso The Arduino pin that will be attached to the MISO line on the TFT board
+ * @param mosi The Arduino pin that will be attached to the MOSI line on the TFT board
+ * @param reset The Arduino pin that will be attached to the reset line on the TFT board
+ * @param clk The Arduino pin that will be attached to the clock line on the TFT board
+ * @param led The Arduino pin that will be attached to the LED line on the TFT board
+ */
+LCDWIKI_SPI::LCDWIKI_SPI(int16_t wid, int16_t heg, int8_t cs, int8_t cd, int8_t miso, int8_t mosi, int8_t reset, int8_t clk, int8_t led) {
 	_cs = cs;
 	_cd = cd;
 	_miso = miso;
@@ -206,9 +232,19 @@ LCDWIKI_SPI::LCDWIKI_SPI(int16_t wid,int16_t heg,int8_t cs, int8_t cd, int8_t mi
 }
 #endif
 
-// Constructor for hardware spi.
-// if modules is unreadable or you don't know the width and height of modules,you can use this constructor.
-LCDWIKI_SPI::LCDWIKI_SPI(uint16_t model,int8_t cs, int8_t cd, int8_t reset, int8_t led) {
+/*!
+ * @brief Constructor for a hardware SPI which will instantaite a new object 
+ *   based on the model number.  The model number must be one of the values 
+ *   that is defined in the LCDWIKI_SPI.h file.
+ * 
+ * @param model The width of the display in pixels
+ * 
+ * @param cs The Arduino pin that will be attached to the chip select line on the TFT board
+ * @param cd The Arduino pin that will be attached to the command or data line on the TFT board
+ * @param reset The Arduino pin that will be attached to the reset line on the TFT board
+ * @param led The Arduino pin that will be attached to the LED line on the TFT board
+ */
+LCDWIKI_SPI::LCDWIKI_SPI(uint16_t model, int8_t cs, int8_t cd, int8_t reset, int8_t led) {
 	_cs = cs;
 	_cd = cd;
 	_miso = -1;
@@ -281,10 +317,19 @@ LCDWIKI_SPI::LCDWIKI_SPI(uint16_t model,int8_t cs, int8_t cd, int8_t reset, int8
 	setWriteDir();
 }
 
-// Constructor for hardware spi.
-// if modules is readable or you know the width and height of modules,you can use this constructor.
-LCDWIKI_SPI::LCDWIKI_SPI(int16_t wid,int16_t heg,int8_t cs, int8_t cd, int8_t reset,int8_t led)
-{
+/*!
+ * @brief Constructor for a hardware SPI which will instantiate a new object 
+ *   based on the width and height of the display.
+ * 
+ * @param wid The width of the display in pixels
+ * @param heg The height of the diplay in pixels
+ * 
+ * @param cs The Arduino pin that will be attached to the chip select line on the TFT board
+ * @param cd The Arduino pin that will be attached to the command or data line on the TFT board
+ * @param reset The Arduino pin that will be attached to the reset line on the TFT board
+ * @param led The Arduino pin that will be attached to the LED line on the TFT board
+ */
+LCDWIKI_SPI::LCDWIKI_SPI(int16_t wid, int16_t heg, int8_t cs, int8_t cd, int8_t reset,int8_t led) {
 	_cs = cs;
 	_cd = cd;
 	_miso = -1;
@@ -386,13 +431,12 @@ void LCDWIKI_SPI::reset(void) {
 	}
 	CS_IDLE;
 }
-/**
+
+/*!
  * @brief Control the led 
  * 
  * @param turnOn true to turn on, false to turn off
  */
- 
- 
 void LCDWIKI_SPI::Led_control(boolean turnOn) {
 	if(_led >= 0) {
 		if(turnOn) {
@@ -487,7 +531,7 @@ void LCDWIKI_SPI::Push_Command(uint8_t cmd, uint8_t *block, int8_t N) {
 	CS_IDLE;
 }
 
-// Sets the LCD address window 
+
 void LCDWIKI_SPI::Set_Addr_Window(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
 	CS_ACTIVE;
 
@@ -620,16 +664,21 @@ void LCDWIKI_SPI::Set_LR(void) {
 	writeCmdData8(HX8347G_ROWADDREND_LO,height -1);
 	CS_IDLE;
 }
-/**
+
+/*!
  * @brief Push the compressed image format directly to the screen memory.  This
- * will set the address window to x, y, width - 1, height -1.  The width and 
- * height come from the compressed image headers.
+ *   will set the address window to x, y, width - 1, height -1.  The width and 
+ *   height come from the compressed image headers.
  * 
  * @param x The x or top co-ordinate to start drawing at (top-left)
  * @param y The y or left co-ordinate to start drawing at (top-left)
  * @param block The poitn to the block of data
  * @param flags If set to 1 - it will read from PROGMEM address, else it will 
  *   just read from memory
+ * 
+ * @warning There is no bounds checking on this function - if you have a 
+ *   compressed image that will overflow the screen, then the behaviour is 
+ *   undefined
  */
 void LCDWIKI_SPI::Push_Compressed_Image(int16_t x, int16_t y, uint16_t *block, uint8_t flags) {
 	uint16_t color;
@@ -738,7 +787,24 @@ void LCDWIKI_SPI::Push_Any_Color(uint16_t * block, int16_t n, bool first, uint8_
 	CS_IDLE;
 }
 
-//push color table for 8bits
+/*!
+ * @brief Push colours directly to the display memory (which will then update 
+ *   the display).  It will read two bytes before pushing the data.
+ *
+ * @param block The pointer to the block of data for the colours
+ * @param n The number of bytes in the block
+ * @param first Whether this is the first write to the display - in effect this
+ *   will send a command to the chip to indicate that data is going to be 
+ *   written.  Set this to 1 if it is the first write
+ * @param flags There are two flags that can be set from least significant bit
+ *     00000001 - then this is going to be read from PROGMEM, else RAM
+ *     00000010 - This is a big-endian, rather than little endian
+ *   The flags are not mutually exclusive and these are the options:
+ *     passing in a 
+ *       1 - PROGMEM read
+ *       2 - Big-endian
+ *       3 - PROGMEM read and big-endian
+ */
 void LCDWIKI_SPI::Push_Any_Color(uint8_t * block, int16_t n, bool first, uint8_t flags) {
 	uint16_t color;
 	uint8_t h, l;
@@ -772,15 +838,24 @@ void LCDWIKI_SPI::Push_Any_Color(uint8_t * block, int16_t n, bool first, uint8_t
 	CS_IDLE;
 }
 
-//Pass 8-bit (each) R,G,B, get back 16-bit packed color
+/*!
+ * @brief convert a 24 bit colour (8 bits each for red, green, blue) to an 
+ *   rgb565 (5 bits red, 6 bits green, 5 bits blue) 16 bit unsigned integer
+ * 
+ * @param r The red 8 bit value
+ * @param g The green 8 bit value
+ * @param b The blue 8 bit value
+ * 
+ * @return The rgb565 encoded unsigned int colour
+ */
 uint16_t LCDWIKI_SPI::Color_To_565(uint8_t r, uint8_t g, uint8_t b) {
 	return ((r& 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3);
 }
 
 //read value from lcd register 
 uint16_t LCDWIKI_SPI::Read_Reg(uint16_t reg, int8_t index) {
-	uint16_t ret,
-			high;
+	uint16_t ret;
+	uint16_t high;
 
 	uint8_t low;
 
@@ -799,11 +874,28 @@ uint16_t LCDWIKI_SPI::Read_Reg(uint16_t reg, int8_t index) {
 }
 
 //read graph RAM data
+
+/*!
+ * @brief Read from the graphics RAM and store the values into the passed in 
+ *   array
+ *
+ * @param x The x co-ordinate to start reading from
+ * @param y The y co-ordinate to start reading from
+ * 
+ * @param block The array to write the values to
+ * 
+ * @param w The width of memory area to read from
+ * @param h The height of the memory area to read from
+ * 
+ * @return 0 Surprisingly always returns 0 :)
+ */
 int16_t LCDWIKI_SPI::Read_GRAM(int16_t x, int16_t y, uint16_t *block, int16_t w, int16_t h) {
 	uint16_t ret, dummy;
 	int16_t n = w * h;
 	uint8_t r, g, b, tmp;
+
 	Set_Addr_Window(x, y, x + w - 1, y + h - 1);
+
 	while (n > 0) {
 		CS_ACTIVE;
 		writeCmd16(RC);
@@ -819,187 +911,194 @@ int16_t LCDWIKI_SPI::Read_GRAM(int16_t x, int16_t y, uint16_t *block, int16_t w,
 				*block++ = (r<<8 | g);
 				n--;
 			}
+
 			Set_Addr_Window(0, 0, width - 1, height - 1);
 		} else  {
 			read8(r);
 			while (n) {
 				if(R24BIT == 1) {
-        			read8(r);
-         			read8(g);
-        			read8(b);
-            		ret = Color_To_565(r, g, b);
-				}
-				else if(R24BIT == 0)
-				{
+					read8(r);
+					read8(g);
+					read8(b);
+					ret = Color_To_565(r, g, b);
+				} else if(R24BIT == 0) {
 					read16(ret);
 				}
-            	*block++ = ret;
-            	n--;
-        	}
-        }
-//        RD_IDLE;
-				writeCmd16(CC);
-        CS_IDLE;
-        setWriteDir();
-    }
+
+				*block++ = ret;
+				n--;
+			}
+		}
+
+		// set it back to that we are writing to the display
+		writeCmd16(CC);
+		CS_IDLE;
+		setWriteDir();
+	}
+
 	return 0;
 }
 
 //read LCD controller chip ID
-uint16_t LCDWIKI_SPI::Read_ID(void)
-{
+uint16_t LCDWIKI_SPI::Read_ID(void) {
 	uint16_t ret;
-	if ((Read_Reg(0x04,0) == 0x00)&&(Read_Reg(0x04,1) == 0x8000))
-	{
+
+	if ((Read_Reg(0x04,0) == 0x00)&&(Read_Reg(0x04,1) == 0x8000)) {
 		uint8_t buf[] = {0xFF, 0x83, 0x57};
 		Push_Command(HX8357D_SETC, buf, sizeof(buf));
 		ret = (Read_Reg(0xD0,0) << 16) | Read_Reg(0xD0,1);
-		if((ret == 0x990000) || (ret == 0x900000))
-		{
+		if((ret == 0x990000) || (ret == 0x900000)) {
 			return 0x9090;
 		}
 	}
+
 	ret = Read_Reg(0xD3,1);
-	if(ret == 0x9341)
-	{
+
+	if(ret == 0x9341) {
 		return 0x9341;
-	}
-	else if(ret == 0x9486)
-	{
+	} else if(ret == 0x9486) {
 		return 0x9486;
-	}
-	else if(ret == 0x9488)
-	{
+	} else if(ret == 0x9488) {
 		return 0x9488;
-	}
-	else
-	{
+	} else {
 		return Read_Reg(0, 0);
 	}
 }
 
 //set x,y  coordinate and color to draw a pixel point 
-void LCDWIKI_SPI::Draw_Pixe(int16_t x, int16_t y, uint16_t color)
-{
-	if((x < 0) || (y < 0) || (x > Get_Width()) || (y > Get_Height()))
-	{
+
+/*!
+ * @brief Draw a pixel to a co-ordinate of the screen (x, y), this will do
+ *   nothing if the provided co-ordinates are off the screen.
+ * 
+ * @param x The x co-ordinate of the display
+ * @param y The y co-ordinate of the display
+ * 
+ * @param color The rgb565 packed colour to write
+ * 
+ * @warning This is a slow operation and will call Set_Addr_Window(x, y, x, y).
+ *   If you need to draw more than one pixel in a row, the Push_Any_Color() 
+ *   function is a much faster way of doing this
+ */
+void LCDWIKI_SPI::Draw_Pixe(int16_t x, int16_t y, uint16_t color) {
+	if((x < 0) || (y < 0) || (x > Get_Width()) || (y > Get_Height())) {
 		return;
 	}
+
 	Set_Addr_Window(x, y, x, y);
+
 	CS_ACTIVE;
-	if(lcd_driver == ID_1283A)
-	{
+
+	if(lcd_driver == ID_1283A) {
 		writeData16(color);
-	}
-	else if(lcd_driver == ID_1106)
-	{
-		if(color)
-		{
+	} else if(lcd_driver == ID_1106) {
+		if(color) {
 			SH1106_buffer[(y/8)*WIDTH+x]|= (1<<(y%8))&0xff;
-		}
-		else
-		{
+		} else {
 			SH1106_buffer[(y/8)*WIDTH+x]&= ~((1<<(y%8))&0xff);
 		}
-	}
-	else
-	{
-		if(MODEL == ILI9488_18)
-		{
+	} else {
+		if(MODEL == ILI9488_18) {
 			writeCmd8(CC);
 			writeData18(color);
-		}
-		else
-		{
+		} else {
 			writeCmdData16(CC, color);
 		}
 	}
+
 	CS_IDLE;
 }
 
-//fill area from x to x+w,y to y+h
-void LCDWIKI_SPI::Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
-{
+/*!
+ * @brief Fill a rectangle starting from x, y with width w and height h.  If 
+ *   the rectangle will write out of bounds of the display, then it will be 
+ *   cropped to the edge of the display.  
+ *   i.e. fill area from x to x+w, y to y+h
+ * 
+ * @param x The x co-ordinate of the display
+ * @param y The y co-ordinate of the display
+ * 
+ * @param w The width of the rectangle
+ * @param h The height of the rectangle
+ * 
+ * @param color The rgb565 colour to fill the rectangle with
+ */
+void LCDWIKI_SPI::Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
 	int16_t end;
-	if (w < 0) 
-	{
-        w = -w;
-        x -= w;
-    }                           //+ve w
-    end = x + w;
-    if (x < 0)
-    {
-        x = 0;
-    }
-    if (end > Get_Width())
-    {
-        end = Get_Width();
-    }
-    w = end - x;
-    if (h < 0) 
-	{
-        h = -h;
-        y -= h;
-    }                           //+ve h
-    end = y + h;
-    if (y < 0)
-    {
-        y = 0;
-    }
-    if (end > Get_Height())
-    {
-        end = Get_Height();
-    }
-    h = end - y;
-    Set_Addr_Window(x, y, x + w - 1, y + h - 1);
+
+	if (w < 0) {
+		w = -w;
+		x -= w;
+	}                           //+ve w
+	end = x + w;
+
+	if (x < 0) {
+		x = 0;
+	}
+
+	if (end > Get_Width()) {
+		end = Get_Width();
+	}
+	w = end - x;
+
+	if (h < 0) {
+		h = -h;
+		y -= h;
+	}                           //+ve h
+	end = y + h;
+
+	if (y < 0) {
+		y = 0;
+	}
+
+	if (end > Get_Height()) {
+		end = Get_Height();
+	}
+	h = end - y;
+
+	Set_Addr_Window(x, y, x + w - 1, y + h - 1);
+
 	CS_ACTIVE;
-	if(lcd_driver == ID_1106)
-	{
-		int16_t i,j;
-		for(i=0;i<h;i++)
-		{
-			for(j=0;j<w;j++)
-			{
+	if(lcd_driver == ID_1106) {
+		int16_t i;
+		int16_t j;
+
+		for(i=0;i<h;i++) {
+			for(j=0;j<w;j++) {
 				Draw_Pixe(x+j, y+i,color);
-			}		
+			}
 		}
 		CS_IDLE;
 		return;
+	} else if(lcd_driver == ID_932X) {
+		writeCmd8(ILI932X_START_OSC);
 	}
-    else if(lcd_driver == ID_932X)
-	{
-		writeCmd8(ILI932X_START_OSC);		
-	} 		
-	writeCmd8(CC);		
-	if (h > w) 
-	{
-        end = h;
-        h = w;
-        w = end;
-    }
-	while (h-- > 0) 
-	{
+
+	writeCmd8(CC);
+
+	if (h > w) {
+		end = h;
+		h = w;
+		w = end;
+	}
+
+	while (h-- > 0)  {
 		end = w;
-		do 
-		{
-			if(MODEL == ILI9488_18)
-			{
+		do {
+			if(MODEL == ILI9488_18) {
 				writeData18(color);
-			}
-			else
-			{
-   				writeData16(color);
+			} else {
+				writeData16(color);
 			}
 		} while (--end != 0);
 	}
-	if(lcd_driver == ID_932X)
-	{
+
+	if(lcd_driver == ID_932X) {
 		Set_Addr_Window(0, 0, width - 1, height - 1);
-	}
-	else if(lcd_driver == ID_7575)
-	{
+	} else if(lcd_driver == ID_7575) {
 		Set_LR();
 	}
+
 	CS_IDLE;
 }
 
@@ -1270,7 +1369,7 @@ void LCDWIKI_SPI::Invert_Display(boolean i) {
 	CS_IDLE;
 }
 
-/**
+/*!
  * @brief Draw a bitmap to the screen at position x, y with width and height
  * 
  * @param x The x position to start drawing the bitmap
