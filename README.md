@@ -1,4 +1,4 @@
-#LCDWIKI_SPI Library
+# LCDWIKI_SPI Library
 
 
 
@@ -6,7 +6,7 @@
 
 Click on the `<> Code` button (top right of the screen), and then select `Download ZIP`
 
-![./Document/images/arduino - download library.png](Downloading the code)
+![Downloading the code](./Document/images/arduino - download library.png)
 
 Unzip the library and move the newly unzipped folder folder into your `Arduino/libraries/` directory
 
@@ -27,7 +27,9 @@ You may also want to include the `LCDWIKI_GUI` library as well:
 
 
 ---
-Previous Library License README.txt
+
+### Previous Library License README.txt
+
 --- 
 
 This is a library for the SPI lcd display.
