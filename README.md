@@ -20,7 +20,7 @@ This is a library for the SPI LCD display, which supports the following LCD Cont
 
 # The most notable additions
 
-1. `Push_Compressed_Image()` function - if you want to know the format and details of the compression see ![https://medium.com/@synapticloop/image-compression-algorithm-for-the-4-tft-spi-st7796s-on-an-arduino-50d64021cf5d](Image Compression Algorithm for the 4" TFT SPI ST7796S on an Arduino).
+1. `Push_Compressed_Image()` function - if you want to know the format and details of the compression see [Image Compression Algorithm for the 4" TFT SPI ST7796S on an Arduino](https://medium.com/@synapticloop/image-compression-algorithm-for-the-4-tft-spi-st7796s-on-an-arduino-50d64021cf5d).
 2. `Read_GRAM()` fix so that it is reset to write mode after reading it, rather than trying to remember to pass the opaque sounding `flag` set to `first`.
 3. General code cleanup and method documentation
 
