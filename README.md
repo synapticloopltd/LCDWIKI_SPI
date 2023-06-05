@@ -25,7 +25,62 @@ You may also want to include the `LCDWIKI_GUI` library as well:
 #include <LCDWIKI_GUI.h>    //Core graphics library
 ```
 
+## Quickstart Code
 
+### Arduino UNO
+```c++
+//paramters define
+#define MODEL ST7796S // this is the model number of the chipset that you are using
+#define CS A5
+#define CD A3
+#define RST A4
+#define LED A0  //if you don't need to control the LED pin,you should set it to -1 and set it to 3.3V
+
+// If you need to use Software SPI - which is not recommended as it is much slower - you will need to set the MOSI and SCK pins as well
+#define MOSI  11
+#define SCK   13
+```
+
+### Arduino mega2560
+
+```c++
+//paramters define
+#define MODEL ST7796S // this is the model number of the chipset that you are using
+#define CS A5
+#define CD A3
+#define RST A4
+#define LED A0  //if you don't need to control the LED pin,you should set it to -1 and set it to 3.3V
+
+// If you need to use Software SPI - which is not recommended as it is much slower - you will need to set the MOSI and SCK pins as well
+
+
+#define MISO  50
+#define MOSI  51
+#define SCK   52
+
+```
+
+### Common Setup Code
+
+Once the pins are set, then you need to initialise the LCD, which is the same for either Arduino device depending on whether you are using software or hardware SPI.
+
+```c++
+
+// NOTE: Initialise only __ONE__ of the following
+
+LCDWIKI_SPI mylcd(MODEL, CS, CD, RST, LED); // this is for the hardware SPI
+LCDWIKI_SPI mylcd(MODEL, CS, CD, MISO, MOSI, RST, SCK, LED); // this is for the software SPI
+
+
+
+void setup() {
+  mylcd.Init_LCD();
+  // mylcd.Do_Your_Code_Here();
+}
+
+```
+
+If you are going to use software MISO
 ---
 
 ### Previous Library License README.txt
