@@ -1,5 +1,22 @@
 # LCDWIKI_SPI Library
 
+This is a library for the SPI LCD display, which supports the following LCD Controllers.  Before using any of the functions in this library, you will need to `#define` the model number from the list below, and set the pins, and possibly set the `MISO` and `MOSI` pins as well.
+
+ - **`ILI9325`**
+ - **`ILI9328`**
+ - **`ILI9341`**
+ - **`HX8357D`**
+ - **`HX8347G`**
+ - **`HX8347I`**
+ - **`ILI9486`**
+ - **`ST7735S`**
+ - **`SSD1283A`**
+ - **`SH1106`**
+ - **`ST7735S128`**
+ - **`ILI9488`**
+ - **`ILI9488_18`**
+ - **`ILI9225`**
+ - **`ST7796S`**
 
 
 ## Download And Installation
@@ -49,9 +66,10 @@ You may also want to include the `LCDWIKI_GUI` library as well:
 #define CS A5
 #define CD A3
 #define RST A4
-#define LED A0  //if you don't need to control the LED pin,you should set it to -1 and set it to 3.3V
+#define LED A0  // if you don't need to control the LED pin,you should set it to -1 and set it to 3.3V
 
-// If you need to use Software SPI - which is not recommended as it is much slower - you will need to set the MOSI and SCK pins as well
+// If you need to use Software SPI - which is not recommended as it is much slower - you will 
+// need to set the MISO, MOSI, and SCK pins as well
 
 
 #define MISO  50
@@ -72,7 +90,6 @@ LCDWIKI_SPI mylcd(MODEL, CS, CD, RST, LED); // this is for the hardware SPI
 LCDWIKI_SPI mylcd(MODEL, CS, CD, MISO, MOSI, RST, SCK, LED); // this is for the software SPI
 
 
-
 void setup() {
   mylcd.Init_LCD();
   // mylcd.Do_Your_Code_Here();
@@ -80,7 +97,6 @@ void setup() {
 
 ```
 
-If you are going to use software MISO
 ---
 
 ### Previous Library License README.txt
