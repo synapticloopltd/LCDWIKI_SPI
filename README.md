@@ -38,13 +38,13 @@ Restart the Arduino IDE
 You will need to include the library in your sketch project, at the top of the file:
 
 ```
-#include <LCDWIKI_SPI.h>    //Hardware-specific library
+#include <LCDWIKI_SPI.h>    // Hardware-specific library
 ```
 
 You may also want to include the `LCDWIKI_GUI` library as well:
 
 ```
-#include <LCDWIKI_GUI.h>    //Core graphics library
+#include <LCDWIKI_GUI.h>    // Core graphics library
 ```
 
 ## Quickstart Code
@@ -53,13 +53,14 @@ You may also want to include the `LCDWIKI_GUI` library as well:
 ```c++
 //paramters define
 #define MODEL ST7796S // this is the model number of the chipset that you are using
-#define CS A5
-#define CD A3
-#define RST A4
-#define LED A0  //if you don't need to control the LED pin,you should set it to -1 and set it to 3.3V
+#define CS    A5
+#define CD    A3
+#define RST   A4
+#define LED   A0  //if you don't need to control the LED pin,you should set it to -1 and set it to 3.3V
 
-// If you need to use Software SPI - which is not recommended as it is much slower - you will need to set the MOSI and SCK pins as well
+// If you need to use Software SPI - which is not recommended as it is much slower - you will need to set the MOSI, MISO, and SCK pins as well
 #define MOSI  11
+#define MISO  12
 #define SCK   13
 ```
 
@@ -68,10 +69,10 @@ You may also want to include the `LCDWIKI_GUI` library as well:
 ```c++
 //paramters define
 #define MODEL ST7796S // this is the model number of the chipset that you are using
-#define CS A5
-#define CD A3
-#define RST A4
-#define LED A0  // if you don't need to control the LED pin,you should set it to -1 and set it to 3.3V
+#define CS    A5
+#define CD    A3
+#define RST   A4
+#define LED   A0  // if you don't need to control the LED pin,you should set it to -1 and set it to 3.3V
 
 // If you need to use Software SPI - which is not recommended as it is much slower - you will 
 // need to set the MISO, MOSI, and SCK pins as well

@@ -409,7 +409,12 @@ void LCDWIKI_SPI::Init_LCD(void) {
 	start(lcd_model);
 }
 
-// Initialization common to both shield & breakout configs
+/*!
+ * @brief Reset the LCD py pulling the reset pin low, waiting 2, then setting
+ *   it high.  This is common to both shield and breakout configurations
+ *
+ * @param void
+ */
 void LCDWIKI_SPI::reset(void) {
 	CS_IDLE;
 	RD_IDLE;
@@ -426,9 +431,10 @@ void LCDWIKI_SPI::reset(void) {
 
 	write8(0x00);
 
-	for(uint8_t i=0; i<3; i++) {
+	for(uint8_t i = 0; i < 3; i++) {
 		WR_STROBE; // Three extra 0x00s
 	}
+
 	CS_IDLE;
 }
 
@@ -812,7 +818,7 @@ void LCDWIKI_SPI::Push_Any_Color(uint8_t * block, int16_t n, bool first, uint8_t
 	bool isbigend = (flags & 2) != 0;
 	CS_ACTIVE;
 
-	if (first)  { 
+	if (first) { 
 		if(lcd_driver == ID_932X) {
 			writeCmd8(ILI932X_START_OSC);
 		}
@@ -1841,33 +1847,42 @@ void LCDWIKI_SPI::start(uint16_t ID) {
 			break;
 		 case 0x1283:
 		 	lcd_driver = ID_1283A;
-			XC=0x45,YC=0x44,CC=0x22,RC=HX8357_RAMRD,SC1=0x41,SC2=0x42,MD=0x03,VL=1,R24BIT=0;
-		 	static const uint16_t SSD1283A_regValues[] PROGMEM = 
-			{
-				0x10, 0x2F8E,            
-            	0x11, 0x000C,  
-            	0x07, 0x0021,           
-            	0x28, 0x0006,      
-            	0x28, 0x0005,     
-            	0x27, 0x057F,        
-            	0x29, 0x89A1,     
-            	0x00, 0x0001,     
-            	TFTLCD_DELAY16, 100,       
-            	0x29, 0x80B0,   
-            	TFTLCD_DELAY16, 30, 
-            	0x29, 0xFFFE,
-            	0x07, 0x0223,
-            	TFTLCD_DELAY16, 30, 
-            	0x07, 0x0233,
-            	0x01, 0x2183,
-            	0x03, 0x6830,
-            	0x2F, 0xFFFF,
-            	0x2C, 0x8000,
-            	0x27, 0x0570,
-            	0x02, 0x0300,
-            	0x0B, 0x580C,
-            	0x12, 0x0609,
-            	0x13, 0x3100, 
+
+			XC=0x45,
+			YC=0x44,
+			CC=0x22,
+			RC=HX8357_RAMRD,
+			SC1=0x41,
+			SC2=0x42,
+			MD=0x03,
+			VL=1,
+			R24BIT=0;
+
+		 	static const uint16_t SSD1283A_regValues[] PROGMEM =  {
+				0x10, 0x2F8E,
+				0x11, 0x000C,
+				0x07, 0x0021,
+				0x28, 0x0006,
+				0x28, 0x0005,
+				0x27, 0x057F,
+				0x29, 0x89A1,
+				0x00, 0x0001,
+				TFTLCD_DELAY16, 100,
+				0x29, 0x80B0,
+				TFTLCD_DELAY16, 30, 
+				0x29, 0xFFFE,
+				0x07, 0x0223,
+				TFTLCD_DELAY16, 30, 
+				0x07, 0x0233,
+				0x01, 0x2183,
+				0x03, 0x6830,
+				0x2F, 0xFFFF,
+				0x2C, 0x8000,
+				0x27, 0x0570,
+				0x02, 0x0300,
+				0x0B, 0x580C,
+				0x12, 0x0609,
+				0x13, 0x3100, 
 			};
 			init_table16(SSD1283A_regValues, sizeof(SSD1283A_regValues));
 			break;
