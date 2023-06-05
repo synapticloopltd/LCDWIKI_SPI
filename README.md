@@ -6,7 +6,7 @@
 
 Click on the `<> Code` button (top right of the screen), and then select `Download ZIP`
 
-![Downloading the code](/Document/images/arduino - download library.png)
+![Downloading the code](/Document/images/arduino-download-library.png)
 
 Unzip the library and move the newly unzipped folder folder into your `Arduino/libraries/` directory
 
