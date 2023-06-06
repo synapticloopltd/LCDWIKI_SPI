@@ -43,7 +43,7 @@
 #define ID_7796     12
 #define ID_UNKNOWN  0xFF
 
-// LCD controller chip mode identifiers
+// LCD controller chip model identifiers
 #define ILI9325     0
 #define ILI9328     1
 #define ILI9341     2
@@ -98,10 +98,12 @@ class LCDWIKI_SPI:public LCDWIKI_GUI {
 		int16_t Read_GRAM(int16_t x, int16_t y, uint16_t *block, int16_t w, int16_t h);
 		void Set_Addr_Window(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
 
-		void Push_Any_Color(uint16_t * block, int16_t n, bool first, uint8_t flags);
+
+		void Push_Any_Color(uint16_t *block, int16_t n, bool first, uint8_t flags);
 		void Push_Any_Color(uint8_t * block, int16_t n, bool first, uint8_t flags);
 
 		void Push_Compressed_Image(int16_t x, int16_t y, uint16_t *block, uint8_t flags);
+		void Push_Indexed_Image(int16_t x, int16_t y, uint8_t *block, uint8_t flags);
 
 		void Vert_Scroll(int16_t top, int16_t scrollines, int16_t offset);
 		int16_t Get_Height(void) const;

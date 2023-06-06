@@ -678,7 +678,7 @@ void LCDWIKI_SPI::Set_LR(void) {
  * 
  * @param x The x or top co-ordinate to start drawing at (top-left)
  * @param y The y or left co-ordinate to start drawing at (top-left)
- * @param block The poitn to the block of data
+ * @param block The pointer to the block of data
  * @param flags If set to 1 - it will read from PROGMEM address, else it will 
  *   just read from memory
  * 
@@ -750,6 +750,151 @@ void LCDWIKI_SPI::Push_Compressed_Image(int16_t x, int16_t y, uint16_t *block, u
 					color = pgm_read_word(block++);
 				} else {
 					color = (*block++);
+				}
+
+				if(MODEL == ILI9488_18) {
+					writeData18(color);
+				} else {
+					writeData16(color);
+				}
+			}
+		}
+	}
+	CS_IDLE;
+}
+
+/*!
+ * @brief Push the indexed image format directly to the screen memory.  This
+ *   will set the address window to x, y, width - 1, height -1.  The width and 
+ *   height come from the compressed image headers.
+ * 
+ * @param x The x or top co-ordinate to start drawing at (top-left)
+ * @param y The y or left co-ordinate to start drawing at (top-left)
+ * @param block The pointer to the block of data
+ * @param flags If set to 1 - it will read from PROGMEM address, else it will 
+ *   just read from memory
+ * 
+ * @warning There is no bounds checking on this function - if you have a 
+ *   compressed image that will overflow the screen, then the behaviour is 
+ *   undefined
+ */
+void LCDWIKI_SPI::Push_Indexed_Image(int16_t x, int16_t y, uint8_t *block, uint8_t flags) {
+	uint16_t color; // the current colour that we are drawing
+	uint16_t width; // the width of the image
+	uint16_t height; // the height of the image
+	long numPixels; // the number of pixels we have - which is width * height
+
+	uint8_t numberToDraw; // the number of compressed colours to draw
+	uint8_t h; // reading the high byte for 2 bytes of width
+	uint8_t l; // reading the low byte for 2 bytes of height
+
+	uint8_t colorIndex; // the index of the colour that maps to the colour index in the header
+	uint8_t numEntries; // the number of colour map entries in the header
+	uint8_t mapPointer; // the pointer to the start of the colour map
+
+	bool isconst = flags & 1; // whether to read from PROGMEM, or memory
+	bool is8Bit = false; // Whether to use 8 or 16 bit widths
+
+	uint8_t *mapAddress = block; // 
+
+	if(isconst) {
+		is8Bit = pgm_read_byte(block++); 
+		mapAddress += 1;
+
+		if(is8Bit) {
+			width = pgm_read_byte(block++);
+			height = pgm_read_byte(block++);
+			mapAddress += 2;
+		} else {
+			width = pgm_read_word(block++);
+			height = pgm_read_word(block++);
+			mapAddress += 4;
+		}
+
+		// here we have the height and width - the next byte is the number
+		// of entries in the map
+
+		numEntries = pgm_read_byte(block++);
+		mapAddress += 1;
+	} else {
+		is8Bit = (*block++);
+
+		if(is8Bit) {
+			width = (*block++);
+			height = (*block++);
+		} else {
+			h = (*block++);
+			l = (*block++);
+			width = (h << 8 | l);
+
+			h = (*block++);
+			l = (*block++);
+			height = (h << 8 | l);
+		}
+
+		// here we have the height and width - the next byte is the number
+		// of entries in the map
+
+		numEntries = (*block++);
+		mapAddress += 1;
+	}
+
+	numPixels = width * height;
+	// now we need to skip ahead the number of entries
+	block += (numEntries * 2);
+
+	// At this point we are at the start of the data
+
+	// TODO - should we do bounds checking??
+	Set_Addr_Window(x, y, x + width - 1, y + height - 1);
+
+	CS_ACTIVE;
+
+	if(lcd_driver == ID_932X) {
+		writeCmd8(ILI932X_START_OSC);
+	}
+
+	writeCmd8(CC);
+
+	while(numPixels > 0) {
+		if(isconst) {
+			numberToDraw = pgm_read_byte(block++);
+		} else {
+			numberToDraw = (*block++);
+		}
+
+		if ((numberToDraw & 0x80) == 0x80) {
+			// we have compression
+			numberToDraw -= 0x80;
+			numPixels -= numberToDraw;
+
+			if(isconst) {
+				colorIndex = pgm_read_byte(block++);
+				color = ((pgm_read_byte(mapAddress + (colorIndex * 2))) << 8) + (pgm_read_byte(mapAddress + (colorIndex * 2) + 1));
+			} else {
+				colorIndex = (*block++);
+				color = (*(mapAddress + (colorIndex * 2)) << 8) + *(mapAddress + (colorIndex * 2) + 1);
+			}
+			
+			while(numberToDraw-- > 0) {
+				if(MODEL == ILI9488_18) {
+					writeData18(color);
+				} else {
+					writeData16(color);
+				}
+			}
+		} else {
+			// draw the raw colors
+			numPixels -= numberToDraw;
+
+			while(numberToDraw-- > 0) {
+
+				if(isconst) {
+					colorIndex = pgm_read_byte(block++);
+					color = ((pgm_read_byte(mapAddress + (colorIndex * 2))) << 8) + (pgm_read_byte(mapAddress + (colorIndex * 2) + 1));
+				} else {
+					colorIndex = (*block++);
+					color = (*(mapAddress + (colorIndex * 2)) << 8) + *(mapAddress + (colorIndex * 2) + 1);
 				}
 
 				if(MODEL == ILI9488_18) {
