@@ -938,6 +938,8 @@ void LCDWIKI_SPI::Push_Any_Color(uint16_t * block, int16_t n, bool first, uint8_
 	CS_IDLE;
 }
 
+
+
 /*!
  * @brief Push colours directly to the display memory (which will then update 
  *   the display).  It will read two bytes before pushing the data.
@@ -980,6 +982,40 @@ void LCDWIKI_SPI::Push_Any_Color(uint8_t * block, int16_t n, bool first, uint8_t
 		}
 
 		color = (isbigend) ? (h << 8 | l) :  (l << 8 | h);
+		if(MODEL == ILI9488_18) {
+			writeData18(color);
+		} else {
+			writeData16(color);
+		}
+	}
+	CS_IDLE;
+}
+
+/*!
+ * @brief Push colours directly to the display memory (which will then update 
+ *   the display) at the address window that is already set.
+ *
+ * @param color The pointer to the block of data for the colours
+ * @param n The number of bytes in the block
+ * @param first Whether this is the first write to the display - in effect this
+ *   will send a command to the chip to indicate that data is going to be 
+ *   written.  Set this to 1 if it is the first write
+ * @param first If true, will push a CC command to start drawing
+ * 
+ * @warning you will need to set the the address window first using 
+ *   Set_Addr_Window()
+ */
+void LCDWIKI_SPI::Push_Same_Color(uint16_t color, uint16_t n, bool first) {
+
+	CS_ACTIVE;
+	if (first) {  
+		if(lcd_driver == ID_932X) {
+			writeCmd8(ILI932X_START_OSC);
+		}
+		writeCmd8(CC);
+	}
+
+	while (n-- > 0) {
 		if(MODEL == ILI9488_18) {
 			writeData18(color);
 		} else {

@@ -71,8 +71,8 @@ class LCDWIKI_SPI:public LCDWIKI_GUI {
 	public:
 		LCDWIKI_SPI(uint16_t model,int8_t cs, int8_t cd, int8_t miso, int8_t mosi, int8_t reset, int8_t clk, int8_t led);
 		LCDWIKI_SPI(uint16_t model,int8_t cs, int8_t cd, int8_t reset,int8_t led);
-		LCDWIKI_SPI(int16_t wid,int16_t heg,int8_t cs, int8_t cd, int8_t miso, int8_t mosi, int8_t reset, int8_t clk,int8_t led);
-		LCDWIKI_SPI(int16_t wid,int16_t heg,int8_t cs, int8_t cd, int8_t reset,int8_t led);
+		LCDWIKI_SPI(int16_t wid, int16_t heg, int8_t cs, int8_t cd, int8_t miso, int8_t mosi, int8_t reset, int8_t clk,int8_t led);
+		LCDWIKI_SPI(int16_t wid, int16_t heg, int8_t cs, int8_t cd, int8_t reset,int8_t led);
 
 		void Init_LCD(void);
 		void reset(void);
@@ -101,6 +101,8 @@ class LCDWIKI_SPI:public LCDWIKI_GUI {
 
 		void Push_Any_Color(uint16_t *block, int16_t n, bool first, uint8_t flags);
 		void Push_Any_Color(uint8_t * block, int16_t n, bool first, uint8_t flags);
+
+		void Push_Same_Color(uint16_t color, uint16_t n, bool first);
 
 		void Push_Compressed_Image(int16_t x, int16_t y, uint16_t *block, uint8_t flags);
 		void Push_Indexed_Image(int16_t x, int16_t y, uint8_t *block, uint8_t flags);
