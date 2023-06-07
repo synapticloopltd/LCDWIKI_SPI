@@ -98,7 +98,6 @@ class LCDWIKI_SPI:public LCDWIKI_GUI {
 		int16_t Read_GRAM(int16_t x, int16_t y, uint16_t *block, int16_t w, int16_t h);
 		void Set_Addr_Window(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
 
-
 		void Push_Any_Color(uint16_t *block, int16_t n, bool first, uint8_t flags);
 		void Push_Any_Color(uint8_t * block, int16_t n, bool first, uint8_t flags);
 

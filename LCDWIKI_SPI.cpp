@@ -398,10 +398,14 @@ LCDWIKI_SPI::LCDWIKI_SPI(int16_t wid, int16_t heg, int8_t cs, int8_t cd, int8_t 
 	height = HEIGHT;
 }
 
-// Initialization lcd modules
+/*!
+ * Initialise the LCD - which __MUST__ be called before anything is done - 
+ * this resets the controller, turns on the LCD and then calls start()
+ */
 void LCDWIKI_SPI::Init_LCD(void) {
 	reset();
 	Led_control(true);
+
 	if(lcd_model == 0xFFFF) {
 		lcd_model = Read_ID(); 
 	}
@@ -439,7 +443,7 @@ void LCDWIKI_SPI::reset(void) {
 }
 
 /*!
- * @brief Control the led 
+ * @brief Control whether the LED display is turned on
  * 
  * @param turnOn true to turn on, false to turn off
  */
@@ -939,7 +943,6 @@ void LCDWIKI_SPI::Push_Any_Color(uint16_t * block, int16_t n, bool first, uint8_
 }
 
 
-
 /*!
  * @brief Push colours directly to the display memory (which will then update 
  *   the display).  It will read two bytes before pushing the data.
@@ -995,7 +998,7 @@ void LCDWIKI_SPI::Push_Any_Color(uint8_t * block, int16_t n, bool first, uint8_t
  * @brief Push colours directly to the display memory (which will then update 
  *   the display) at the address window that is already set.
  *
- * @param color The pointer to the block of data for the colours
+ * @param color The colour to push int rgb565 format
  * @param n The number of bytes in the block
  * @param first Whether this is the first write to the display - in effect this
  *   will send a command to the chip to indicate that data is going to be 
@@ -1666,9 +1669,16 @@ void LCDWIKI_SPI::start(uint16_t ID) {
 			lcd_driver = ID_932X;
 			//WIDTH = 240,HEIGHT = 320;
 			//width = WIDTH, height = HEIGHT;
-			XC=0,YC=0,CC=ILI932X_RW_GRAM,RC=ILI932X_RW_GRAM,SC1=ILI932X_GATE_SCAN_CTRL2,SC2=ILI932X_GATE_SCAN_CTRL3,MD=0x0003,VL=1,R24BIT=0;
-			static const uint16_t ILI932x_regValues[] PROGMEM = 
-			{			
+			XC=0,
+			YC=0,
+			CC=ILI932X_RW_GRAM,
+			RC=ILI932X_RW_GRAM,
+			SC1=ILI932X_GATE_SCAN_CTRL2,
+			SC2=ILI932X_GATE_SCAN_CTRL3,
+			MD=0x0003,
+			VL=1,
+			R24BIT=0;
+			static const uint16_t ILI932x_regValues[] PROGMEM =  {
 		  		ILI932X_START_OSC 	   , 0x0001, // Start oscillator
 		  		TFTLCD_DELAY16			   , 50,	 // 50 millisecond delay
 		  		ILI932X_DRIV_OUT_CTRL    , 0x0100,
@@ -1728,40 +1738,39 @@ void LCDWIKI_SPI::start(uint16_t ID) {
 			//WIDTH = 240,HEIGHT = 320;
 			//width = WIDTH, height = HEIGHT;
 			XC=ILI9341_COLADDRSET,YC=ILI9341_PAGEADDRSET,CC=ILI9341_MEMORYWRITE,RC=HX8357_RAMRD,SC1=0x33,SC2=0x37,MD=ILI9341_MADCTL,VL=0,R24BIT=1;
-			static const uint8_t ILI9341_regValues[] PROGMEM = 
-			{        // BOE 2.4"
+			static const uint8_t ILI9341_regValues[] PROGMEM =  {        // BOE 2.4"
 				ILI9341_SOFTRESET,0,                 //Soft Reset
 				TFTLCD_DELAY8, 50, 
 				ILI9341_DISPLAYOFF, 0,            //Display Off
-            //	ILI9341_PIXELFORMAT, 1, 0x55,      //Pixel read=565, write=565.
-            	ILI9341_INTERFACECONTROL, 3, 0x01, 0x01, 0x00,  //Interface Control needs EXTC=1 MV_EOR=0, TM=0, RIM=0
-            	ILI9341_POWERCONTROLB, 3, 0x00, 0x81, 0x30,  //Power Control B [00 81 30]
-            	ILI9341_POWERONSEQ, 4, 0x64, 0x03, 0x12, 0x81,    //Power On Seq [55 01 23 01]
-            	ILI9341_DRIVERTIMINGA, 3, 0x85, 0x10, 0x78,  //Driver Timing A [04 11 7A]
-            	ILI9341_POWERCONTROLA, 5, 0x39, 0x2C, 0x00, 0x34, 0x02,      //Power Control A [39 2C 00 34 02]
-            	ILI9341_RUMPRATIO, 1, 0x20,      //Pump Ratio [10]
-            	ILI9341_DRIVERTIMINGB, 2, 0x00, 0x00,        //Driver Timing B [66 00]
-            	ILI9341_RGBSIGNAL, 1, 0x00,      //RGB Signal [00] 
-            //	ILI9341_FRAMECONTROL, 2, 0x00, 0x1B,        //Frame Control [00 1B]
-            	//            0xB6, 2, 0x0A, 0xA2, 0x27, //Display Function [0A 82 27 XX]    .kbv SS=1  
-            	ILI9341_INVERSIONCONRTOL, 1, 0x00,      //Inversion Control [02] .kbv NLA=1, NLB=1, NLC=1
-            	ILI9341_POWERCONTROL1, 1, 0x21,      //Power Control 1 [26]
-            	ILI9341_POWERCONTROL2, 1, 0x11,      //Power Control 2 [00]
-            	ILI9341_VCOMCONTROL1, 2, 0x3F, 0x3C,        //VCOM 1 [31 3C]
-            	ILI9341_VCOMCONTROL2, 1, 0xB5,      //VCOM 2 [C0]
-            	ILI9341_MEMCONTROL, 1, ILI9341_MADCTL_MY | ILI9341_MADCTL_BGR,
-            	ILI9341_PIXELFORMAT, 1, 0x55,      //Pixel read=565, write=565.
-            	ILI9341_FRAMECONTROL, 2, 0x00, 0x1B,        //Frame Control [00 1B]
-            	ILI9341_MEMORYACCESS, 1, 0x48,      //Memory Access [00]
-            	ILI9341_ENABLE3G, 1, 0x00,      //Enable 3G [02]
-            	ILI9341_GAMMASET, 1, 0x01,      //Gamma Set [01]
-            	ILI9341_UNDEFINE0, 15, 0x0f, 0x26, 0x24, 0x0b, 0x0e, 0x09, 0x54, 0xa8, 0x46, 0x0c, 0x17, 0x09, 0x0f, 0x07, 0x00,
-            	ILI9341_UNDEFINE1, 15, 0x00, 0x19, 0x1b, 0x04, 0x10, 0x07, 0x2a, 0x47, 0x39, 0x03, 0x06, 0x06, 0x30, 0x38, 0x0f,
+			//	ILI9341_PIXELFORMAT, 1, 0x55,      //Pixel read=565, write=565.
+				ILI9341_INTERFACECONTROL, 3, 0x01, 0x01, 0x00,  //Interface Control needs EXTC=1 MV_EOR=0, TM=0, RIM=0
+				ILI9341_POWERCONTROLB, 3, 0x00, 0x81, 0x30,  //Power Control B [00 81 30]
+				ILI9341_POWERONSEQ, 4, 0x64, 0x03, 0x12, 0x81,    //Power On Seq [55 01 23 01]
+				ILI9341_DRIVERTIMINGA, 3, 0x85, 0x10, 0x78,  //Driver Timing A [04 11 7A]
+				ILI9341_POWERCONTROLA, 5, 0x39, 0x2C, 0x00, 0x34, 0x02,      //Power Control A [39 2C 00 34 02]
+				ILI9341_RUMPRATIO, 1, 0x20,      //Pump Ratio [10]
+				ILI9341_DRIVERTIMINGB, 2, 0x00, 0x00,        //Driver Timing B [66 00]
+				ILI9341_RGBSIGNAL, 1, 0x00,      //RGB Signal [00] 
+			//	ILI9341_FRAMECONTROL, 2, 0x00, 0x1B,        //Frame Control [00 1B]
+				//            0xB6, 2, 0x0A, 0xA2, 0x27, //Display Function [0A 82 27 XX]    .kbv SS=1  
+				ILI9341_INVERSIONCONRTOL, 1, 0x00,      //Inversion Control [02] .kbv NLA=1, NLB=1, NLC=1
+				ILI9341_POWERCONTROL1, 1, 0x21,      //Power Control 1 [26]
+				ILI9341_POWERCONTROL2, 1, 0x11,      //Power Control 2 [00]
+				ILI9341_VCOMCONTROL1, 2, 0x3F, 0x3C,        //VCOM 1 [31 3C]
+				ILI9341_VCOMCONTROL2, 1, 0xB5,      //VCOM 2 [C0]
+				ILI9341_MEMCONTROL, 1, ILI9341_MADCTL_MY | ILI9341_MADCTL_BGR,
+				ILI9341_PIXELFORMAT, 1, 0x55,      //Pixel read=565, write=565.
+				ILI9341_FRAMECONTROL, 2, 0x00, 0x1B,        //Frame Control [00 1B]
+				ILI9341_MEMORYACCESS, 1, 0x48,      //Memory Access [00]
+				ILI9341_ENABLE3G, 1, 0x00,      //Enable 3G [02]
+				ILI9341_GAMMASET, 1, 0x01,      //Gamma Set [01]
+				ILI9341_UNDEFINE0, 15, 0x0f, 0x26, 0x24, 0x0b, 0x0e, 0x09, 0x54, 0xa8, 0x46, 0x0c, 0x17, 0x09, 0x0f, 0x07, 0x00,
+				ILI9341_UNDEFINE1, 15, 0x00, 0x19, 0x1b, 0x04, 0x10, 0x07, 0x2a, 0x47, 0x39, 0x03, 0x06, 0x06, 0x30, 0x38, 0x0f,
 				ILI9341_ENTRYMODE, 1,0x07,
-            	ILI9341_SLEEPOUT, 0,            //Sleep Out
-            	TFTLCD_DELAY8, 150,
-            	ILI9341_DISPLAYON, 0          //Display On
-            };
+				ILI9341_SLEEPOUT, 0,            //Sleep Out
+				TFTLCD_DELAY8, 150,
+				ILI9341_DISPLAYON, 0          //Display On
+			};
 			init_table8(ILI9341_regValues, sizeof(ILI9341_regValues));    
 			break;
 		case 0x9090:
@@ -1769,27 +1778,26 @@ void LCDWIKI_SPI::start(uint16_t ID) {
 			//WIDTH = 320,HEIGHT = 480;
 			//width = WIDTH, height = HEIGHT;
 			XC=ILI9341_COLADDRSET,YC=ILI9341_PAGEADDRSET,CC=HX8357_RAMWR,RC=HX8357_RAMRD,SC1=0x33,SC2=0x37,MD=HX8357_MADCTL,VL=1,R24BIT=1;
-			static const uint8_t HX8357D_regValues[] PROGMEM = 
-			{
-  				HX8357_SWRESET, 0,
-  				HX8357D_SETC, 3, 0xFF, 0x83, 0x57,
-  				TFTLCD_DELAY8, 250,
+			static const uint8_t HX8357D_regValues[] PROGMEM = {
+				HX8357_SWRESET, 0,
+				HX8357D_SETC, 3, 0xFF, 0x83, 0x57,
+				TFTLCD_DELAY8, 250,
 				HX8357_SETRGB, 4, 0x00, 0x00, 0x06, 0x06,
 				HX8357D_SETCOM, 1, 0x25,  // -1.52V
-  				HX8357_SETOSC, 1, 0x68,  // Normal mode 70Hz, Idle mode 55 Hz
-  				HX8357_SETPANEL, 1, 0x05,  // BGR, Gate direction swapped
-  				HX8357_SETPWR1, 6, 0x00, 0x15, 0x1C, 0x1C, 0x83, 0xAA,
-  				HX8357D_SETSTBA, 6, 0x50, 0x50, 0x01, 0x3C, 0x1E, 0x08,
-  				// MEME GAMMA HERE
-  				HX8357D_SETCYC, 7, 0x02, 0x40, 0x00, 0x2A, 0x2A, 0x0D, 0x78,
-  				HX8357_COLMOD, 1, 0x55,
-  				HX8357_MADCTL, 1, 0xC0,
-  				HX8357_TEON, 1, 0x00,
-  				HX8357_TEARLINE, 2, 0x00, 0x02,
-  				HX8357_SLPOUT, 0,
-  				TFTLCD_DELAY8, 150,
-  				HX8357_DISPON, 0, 
-  				TFTLCD_DELAY8, 50
+				HX8357_SETOSC, 1, 0x68,  // Normal mode 70Hz, Idle mode 55 Hz
+				HX8357_SETPANEL, 1, 0x05,  // BGR, Gate direction swapped
+				HX8357_SETPWR1, 6, 0x00, 0x15, 0x1C, 0x1C, 0x83, 0xAA,
+				HX8357D_SETSTBA, 6, 0x50, 0x50, 0x01, 0x3C, 0x1E, 0x08,
+				// MEME GAMMA HERE
+				HX8357D_SETCYC, 7, 0x02, 0x40, 0x00, 0x2A, 0x2A, 0x0D, 0x78,
+				HX8357_COLMOD, 1, 0x55,
+				HX8357_MADCTL, 1, 0xC0,
+				HX8357_TEON, 1, 0x00,
+				HX8357_TEARLINE, 2, 0x00, 0x02,
+				HX8357_SLPOUT, 0,
+				TFTLCD_DELAY8, 150,
+				HX8357_DISPON, 0, 
+				TFTLCD_DELAY8, 50
 			};
 			init_table8(HX8357D_regValues, sizeof(HX8357D_regValues));
 			break;
