@@ -113,60 +113,54 @@ class LCDWIKI_SPI:public LCDWIKI_GUI {
 		void Led_control(boolean i);
 
 	protected:
-		uint8_t 
-			xoffset, 
-			yoffset;
+		uint8_t xoffset;
+		uint8_t yoffset;
 
-		uint16_t 
-			WIDTH,
-			HEIGHT,
-			width, 
-			height, 
-			rotation,
-			lcd_driver,
-			lcd_model;
+		uint16_t WIDTH;
+		uint16_t HEIGHT;
+		uint16_t width;
+		uint16_t height;
+		uint16_t rotation;
+		uint16_t lcd_driver;
+		uint16_t lcd_model;
 
 		boolean hw_spi;
 
 	private:
-		uint16_t 
-				XC,
-				YC,
-				CC,
-				RC,
-				SC1,
-				SC2,
-				MD,
-				VL,
-				R24BIT,
-				MODEL;
+		uint16_t XC;
+		uint16_t YC;
+		uint16_t CC;
+		uint16_t RC;
+		uint16_t SC1;
+		uint16_t SC2;
+		uint16_t MD;
+		uint16_t VL;
+		uint16_t R24BIT;
+		uint16_t MODEL;
  
-		volatile uint8_t 
-				*spicsPort, 
-				*spicdPort, 
-				*spimisoPort , 
-				*spimosiPort, 
-				*spiclkPort;
+		volatile uint8_t *spicsPort;
+		volatile uint8_t *spicdPort;
+		volatile uint8_t *spimisoPort;
+		volatile uint8_t *spimosiPort;
+		volatile uint8_t *spiclkPort;
 
-		uint8_t 
-				spicsPinSet, 
-				spicdPinSet,
-				spimisoPinSet, 
-				spimosiPinSet, 
-				spiclkPinSet,
-				spicsPinUnset, 
-				spicdPinUnset, 
-				spimisoPinUnset,
-				spimosiPinUnset,
-				spiclkPinUnset;
+		uint8_t spicsPinSet;
+		uint8_t spicdPinSet;
+		uint8_t spimisoPinSet;
+		uint8_t spimosiPinSet;
+		uint8_t spiclkPinSet;
+		uint8_t spicsPinUnset;
+		uint8_t spicdPinUnset;
+		uint8_t spimisoPinUnset;
+		uint8_t spimosiPinUnset;
+		uint8_t spiclkPinUnset;
 
-		int8_t
-				_cs,
-				_cd,
-				_miso,
-				_mosi,
-				_clk,
-				_reset,
-				_led;
+		int8_t _cs;
+		int8_t _cd;
+		int8_t _miso;
+		int8_t _mosi;
+		int8_t _clk;
+		int8_t _reset;
+		int8_t _led;
 };
 #endif

@@ -523,7 +523,7 @@ void LCDWIKI_SPI::Push_Command(uint8_t cmd, uint8_t *block, int8_t N) {
 	CS_ACTIVE;
 
 	if(lcd_driver == ID_1106) {
-    	writeCmd8(cmd);
+		writeCmd8(cmd);
 	} else {
 		writeCmd16(cmd);
 	}
@@ -1292,83 +1292,75 @@ void LCDWIKI_SPI::Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t
 	CS_IDLE;
 }
 
-//Scroll display 
-void LCDWIKI_SPI::Vert_Scroll(int16_t top, int16_t scrollines, int16_t offset)
-{
-    int16_t bfa;
-    int16_t vsp;
-    int16_t sea = top;
-	if(lcd_driver == ID_7735_128)
-	{
+/*!
+ *  @brief Vertically scroll a portion of the screen 
+ *  
+ *  @param top 
+ *  @param scrollines 
+ *  @param offset 
+ */
+void LCDWIKI_SPI::Vert_Scroll(int16_t top, int16_t scrollines, int16_t offset) {
+	int16_t bfa;
+	int16_t vsp;
+	int16_t sea = top;
+
+	if(lcd_driver == ID_7735_128) {
 		bfa = HEIGHT - top - scrollines+4; 
-	}
-	else
-	{
+	} else {
 		bfa = HEIGHT - top - scrollines; 
 	}
-    if (offset <= -scrollines || offset >= scrollines)
-    {
+
+	if (offset <= -scrollines || offset >= scrollines) {
 		offset = 0; //valid scroll
-    }
+	}
+
 	vsp = top + offset; // vertical start position
-    if (offset < 0)
-    {
-        vsp += scrollines;          //keep in unsigned range
-    }
-    sea = top + scrollines - 1;
-	if(lcd_driver == ID_932X)
-	{
+
+	if (offset < 0) {
+		vsp += scrollines;          //keep in unsigned range
+	}
+	sea = top + scrollines - 1;
+
+	if(lcd_driver == ID_932X) {
 		Write_Cmd_Data(SC1, (1 << 1) | 0x1);        //!NDL, VLE, REV
-        Write_Cmd_Data(SC2, vsp);        //VL#
-	}
-	else if(lcd_driver == ID_1283A)
-	{
+		Write_Cmd_Data(SC2, vsp);        //VL#
+	} else if(lcd_driver == ID_1283A) {
 		Write_Cmd_Data(SC1,vsp);
-	}
-	else if(lcd_driver == ID_1106)
-	{
+	} else if(lcd_driver == ID_1106) {
 		return;
-	}
-	else if(lcd_driver == ID_9225)
-	{
+	} else if(lcd_driver == ID_9225) {
 		Write_Cmd_Data(0x32, top);
 		Write_Cmd_Data(SC1, sea);
 		Write_Cmd_Data(SC2, vsp-top);
-	}
-	else
-	{
-  		uint8_t d[6];           // for multi-byte parameters
-  		d[0] = top >> 8;        //TFA
-  		d[1] = top;
-  		d[2] = scrollines >> 8; //VSA
-  		d[3] = scrollines;
-  		d[4] = bfa >> 8;        //BFA
-  		d[5] = bfa;
+	} else {
+		uint8_t d[6];           // for multi-byte parameters
+		d[0] = top >> 8;        //TFA
+		d[1] = top;
+		d[2] = scrollines >> 8; //VSA
+		d[3] = scrollines;
+		d[4] = bfa >> 8;        //BFA
+		d[5] = bfa;
 		Push_Command(SC1, d, 6);
 		d[0] = vsp >> 8;        //VSP
-  		d[1] = vsp;
+		d[1] = vsp;
 		Push_Command(SC2, d, 2);
-		if(lcd_driver == ID_7575)
-		{
+
+		if(lcd_driver == ID_7575) {
 			d[0] = (offset != 0) ? 0x08:0;
 			Push_Command(0x01, d, 1);
-		}
-		else if (offset == 0) 
-		{
+		} else if (offset == 0)  {
 			Push_Command(0x13, NULL, 0);
 		}
 	}
 }
 
 //get lcd width
-int16_t LCDWIKI_SPI::Get_Width(void) const
-{
+int16_t LCDWIKI_SPI::Get_Width(void) const {
 	return width;
 }
 
 //get lcd height
-int16_t LCDWIKI_SPI::Get_Height(void) const
-{
+int16_t LCDWIKI_SPI::Get_Height(void) const {
 	return height;
 }
 
@@ -1411,7 +1403,7 @@ void LCDWIKI_SPI::Set_Rotation(uint8_t r) {
 				break;
 		 	case 3: 
 				val = 0x60; //270 degree 
-				break;			
+				break;
 		}
 		writeCmdData8(MD, val);
 	} else if(lcd_driver == ID_7735_128) {
@@ -1615,29 +1607,24 @@ void LCDWIKI_SPI::SH1106_Display(void) {
 	CS_IDLE;
 }
 
-void LCDWIKI_SPI:: init_table8(const void *table, int16_t size)
-{
+void LCDWIKI_SPI::init_table8(const void *table, int16_t size) {
 	uint8_t i;
-    uint8_t *p = (uint8_t *) table, dat[MAX_REG_NUM];            //R61526 has GAMMA[22] 
-    while (size > 0) 
-	{
-        uint8_t cmd = pgm_read_byte(p++);
-        uint8_t len = pgm_read_byte(p++);
-        if (cmd == TFTLCD_DELAY8) 
-		{
-            delay(len);
-            len = 0;
-        } 
-		else 
-		{
-            for (i = 0; i < len; i++)
-            {
-                dat[i] = pgm_read_byte(p++);
-            }
-			Push_Command(cmd,dat,len);
-        }
-        size -= len + 2;
-    }
+	uint8_t *p = (uint8_t *) table, dat[MAX_REG_NUM];            //R61526 has GAMMA[22] 
+	while (size > 0) {
+		uint8_t cmd = pgm_read_byte(p++);
+		uint8_t len = pgm_read_byte(p++);
+		if (cmd == TFTLCD_DELAY8) {
+			delay(len);
+			len = 0;
+		} else {
+			for (i = 0; i < len; i++) {
+				dat[i] = pgm_read_byte(p++);
+			}
+
+			Push_Command(cmd, dat, len);
+		}
+	size -= len + 2;
+	}
 }
 
 void LCDWIKI_SPI:: init_table16(const void *table, int16_t size)
@@ -2009,28 +1996,26 @@ void LCDWIKI_SPI::start(uint16_t ID) {
 			//WIDTH = 128,HEIGHT = 160;
 			//width = WIDTH, height = HEIGHT;
 			XC=ILI9341_COLADDRSET,YC=ILI9341_PAGEADDRSET,CC=ILI9341_MEMORYWRITE,RC=HX8357_RAMRD,SC1=0x33,SC2=0x37,MD=ILI9341_MADCTL,VL=0,R24BIT=0;
-			static const uint8_t ST7735S_regValues[] PROGMEM = 
-			{
-				0x11, 0,            
-            	TFTLCD_DELAY8, 120,  
-            	0xB1, 3, 0x05, 0x3C, 0x3C,          
-            	0xB2, 3, 0x05, 0x3C, 0x3C,      
-            	0xB3, 6, 0x05, 0x3C, 0x3C, 0x05, 0x3C, 0x3C,     
-            	0xB4, 1, 0x03,        
-            	0xC0, 3, 0x28, 0x08, 0x04,     
-            	0xC1, 1, 0xC0,     
-            	0xC2, 2, 0x0D, 0x00,      
-            	0xC3, 2, 0x8D, 0x2A,   
-            	0xC4, 2, 0x8D, 0xEE,
-            	0xC5, 1, 0x1A,
-            	0x17 , 1 , 0x05,
-            	0x36, 1, 0x08,
-            	0xE0, 16,0x03, 0x22, 0x07, 0x0A, 0x2E, 0x30, 0x25, 0x2A, 0x28, 0x26, 0x2E, 0x3A, 0x00, 0x01, 0x03, 0x13,
-            	0xE1, 16,0x04, 0x16, 0x06, 0x0D, 0x2D, 0x26, 0x23, 0x27, 0x27, 0x25, 0x2D, 0x3B, 0x00, 0x01, 0x04, 0x13,         
-            	//TFTLCD_DELAY8, 150,
-            	0x3A, 1, 0x05,  
-      //      	0x13, 0,
-            	0x29, 0         
+			static const uint8_t ST7735S_regValues[] PROGMEM = {
+				0x11, 0,
+				TFTLCD_DELAY8, 120,
+				0xB1, 3, 0x05, 0x3C, 0x3C,
+				0xB2, 3, 0x05, 0x3C, 0x3C,
+				0xB3, 6, 0x05, 0x3C, 0x3C, 0x05, 0x3C, 0x3C,
+				0xB4, 1, 0x03,
+				0xC0, 3, 0x28, 0x08, 0x04,
+				0xC1, 1, 0xC0,
+				0xC2, 2, 0x0D, 0x00,
+				0xC3, 2, 0x8D, 0x2A,
+				0xC4, 2, 0x8D, 0xEE,
+				0xC5, 1, 0x1A,
+				0x17 , 1 , 0x05,
+				0x36, 1, 0x08,
+				0xE0, 16,0x03, 0x22, 0x07, 0x0A, 0x2E, 0x30, 0x25, 0x2A, 0x28, 0x26, 0x2E, 0x3A, 0x00, 0x01, 0x03, 0x13,
+				0xE1, 16,0x04, 0x16, 0x06, 0x0D, 0x2D, 0x26, 0x23, 0x27, 0x27, 0x25, 0x2D, 0x3B, 0x00, 0x01, 0x04, 0x13,         
+				//TFTLCD_DELAY8, 150,
+				0x3A, 1, 0x05,
+				0x29, 0
 			};
 			init_table8(ST7735S_regValues, sizeof(ST7735S_regValues));
 			break;
@@ -2077,15 +2062,15 @@ void LCDWIKI_SPI::start(uint16_t ID) {
 			break;
 		case 0x7796:
 			lcd_driver = ID_7796;
-			XC=ILI9341_COLADDRSET,
-			YC=ILI9341_PAGEADDRSET,
-			CC=ILI9341_MEMORYWRITE,
-			RC=HX8357_RAMRD,
-			SC1=0x33,
-			SC2=0x37,
-			MD=ILI9341_MADCTL,
-			VL=0,
-			R24BIT=1;
+			XC=ILI9341_COLADDRSET, // 0x2A
+			YC=ILI9341_PAGEADDRSET, // 0x2B
+			CC=ILI9341_MEMORYWRITE, // 0x2C
+			RC=HX8357_RAMRD, // 0x2E
+			SC1=0x33, // Vertical scrolling definition
+			SC2=0x37, // Vertical scrolling start address of RAM
+			MD=ILI9341_MADCTL, // 0x36 - Memory Data Access Contro
+			VL=0, // This is to do with the display inversion control
+			R24BIT=1; // this is about reading the colour from the display in 24 bit or 16 bit
 
 			static const uint8_t ST7796S_regValues[] PROGMEM = {
 				0xF0, 1, 0xC3,
